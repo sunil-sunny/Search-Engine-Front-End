@@ -1,0 +1,119 @@
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #b0b2b5;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(odd) {
+  background-color: #b0b2b5;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 15px;
+}
+div {
+  max-width: 500px;
+  height: 500px;
+  overflow: auto;
+}
+body { font-family: sans-serif; }
+
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  background-color: #f3f3f3;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: #666;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #ddd;
+}
+
+li a.active {
+  color: white;
+  background-color: #4CAF50;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="indexstyle.css">
+<script type="text/javascript">
+
+function loadTrips(){
+var base_url="http://ec2-3-227-33-100.compute-1.amazonaws.com:8082/logdetails";
+var xmlhttp=new XMLHttpRequest();
+xmlhttp.open("GET",base_url,"/packagelist",true);
+xmlhttp.onreadystatechange=function(){
+
+if(xmlhttp.readyState ===4 && xmlhttp.status===200){
+
+var results=JSON.parse(xmlhttp.responseText);
+var main=`<table>
+  <tr>
+    <th>Keyword</th>
+    <th>Search Frequency</th>
+  </tr>`;
+for(i=0;i< results.length;i++){
+
+main += `
+    <tr>
+	<td>`+results[i].keyword+`</td>
+    <td>`+results[i].frequency+`</td>
+    </tr>
+  `;
+
+}
+main+=`</table>`;
+
+
+document.getElementById("app").innerHTML=main;
+
+}
+};
+xmlhttp.send();
+}
+
+
+</script> 
+</head>
+<body onload="loadTrips()">
+<center>
+<h1>Book Search Engine</h1>
+</center>
+<ul>
+  <li><a href="cloud_assignment.html">Search Books</a></li>
+  <li><a class="active" href="logdetails.html">Log Details</a></li>
+  <li><a href="ReadMe.html">Read Me</a></li>
+</ul>
+<center>
+<br>
+<center>
+<div id="app"></div>
+</center>
+</body>
+</html>

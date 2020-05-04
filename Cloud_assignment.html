@@ -1,0 +1,277 @@
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #b0b2b5;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(odd) {
+  background-color: #b0b2b5;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 15px;
+}
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
+input[type=text], select {
+  width: 25%;
+  height: 7%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+body { font-family: sans-serif; }
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  background-color: #f3f3f3;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: #666;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #ddd;
+}
+
+li a.active {
+  color: white;
+  background-color: #4CAF50;
+}
+div.paddingtable {
+  padding-left: 200px;
+  max-width: 500px;
+  height: 300px;
+  overflow: auto;
+   float: left;
+  
+}
+.button {
+  background-color: #63615c;
+  border: none;
+  height: 7%;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="indexstyle.css">
+<script type="text/javascript">
+
+function loadTrips(){
+
+
+var searchWord=document.getElementById("notes").value;
+//alert(searchWord);
+var base_url="http://ec2-3-227-33-100.compute-1.amazonaws.com:8082/search/"+searchWord;
+//alert(base_url);
+var xmlhttp=new XMLHttpRequest();
+xmlhttp.open("GET",base_url,"/packagelist",true);
+xmlhttp.onreadystatechange=function(){
+
+if(xmlhttp.readyState ===4 && xmlhttp.status===200){
+
+var results=JSON.parse(xmlhttp.responseText);
+//alert(results.length);
+
+if(results.length!=0){
+var main=`<table>
+  <tr>
+    <th>Title</th>
+    <th>Author</th>
+  </tr>`;
+for(i=0;i< results.length;i++){
+
+main += `
+    <tr>
+	<td>`+results[i].title+`</td>
+    <td>`+results[i].author+`</td>
+    </tr>
+  `;
+
+}
+//for
+main+=`</table>`;
+divmain=`<input type="text" id="addnotes" />
+<button class="button" value="getnotes" onclick="saveNotes()">Save Notes</button>`;
+
+
+document.getElementById("app").innerHTML=main;
+document.getElementById("notesdiv").innerHTML=divmain;
+}//if
+else{
+alert("No details for given keyword");
+}//else
+}// main_if
+};
+//mainHttp
+xmlhttp.send();
+}
+
+//*****************************************************************************
+
+
+function loadNotes(){
+
+
+var searchWord=document.getElementById("notes").value;
+if(searchWord==""){
+alert("Enter the word to get notes");
+}
+else{
+var base_url="http://ec2-3-227-33-100.compute-1.amazonaws.com:8083/getnotes/"+searchWord;
+var xmlhttp=new XMLHttpRequest();
+//alert(base_url);
+xmlhttp.open("GET",base_url,"",true);
+xmlhttp.onreadystatechange=function(){
+
+if(xmlhttp.readyState ===4 && xmlhttp.status===200){
+
+//alert(xmlhttp.status);
+
+var results=JSON.parse(xmlhttp.responseText);
+
+//alert(results.keyWord);
+//alert(results.notesList);
+var main=`<table>
+  <tr>
+    <th>Title</th>
+	<th>Notes</th>
+  </tr>`;
+
+
+main += `
+    <tr>
+	<td>`+results.keyWord+`</td>
+    <td>`+results.notesList+`</td>
+    </tr>
+  `;
+
+
+main+=`</table>`;
+document.getElementById("notesdisplay").innerHTML=main;
+
+}// main_if
+};
+//mainHttp
+xmlhttp.send();
+}
+}
+
+//*********************************************************************************************************************
+
+
+function saveNotes(){
+
+var keyword=document.getElementById("notes").value;
+//alert(keyword);
+var notes=document.getElementById("addnotes").value;
+//alert(notes);
+var base_url="http://ec2-3-227-33-100.compute-1.amazonaws.com:8083/savenotes/"+keyword+"/"+notes;
+//alert(base_url);
+if(notes==""){
+alert("Notes should be entered before saving it");
+}
+else{
+var xmlhttp=new XMLHttpRequest();
+xmlhttp.open("PUT",base_url,"",true);
+xmlhttp.onreadystatechange=function(){
+
+if(xmlhttp.status==200){
+
+alert("Notes Saved Succesfully");
+}
+
+
+if(xmlhttp.readyState ===4 && xmlhttp.status===200){
+
+var results=JSON.parse(xmlhttp.responseText);
+alert(results);
+
+alert(results.keyWord);
+
+
+
+}// main_if
+};
+//mainHttp
+xmlhttp.send();
+}
+}
+
+</script> 
+</head>
+<body>
+
+<center>
+<h1>Book Search Engine</h1>
+</center>
+<ul>
+  <li><a class="active" href="cloud_assignment.html">Search Books</a></li>
+  <li><a href="logdetails.html">Log Details</a></li>
+  <li><a href="ReadMe.html">Read Me</a></li>
+</ul>
+<center>
+<input type="text" id="notes" />
+<button class="button" value="search" onclick="loadTrips()">Search</button>
+<button class="button" value="getnotes" onclick="loadNotes()">Get Notes</button>
+</center>
+<center>
+<div id="notesdiv"></div>
+</center>
+<br>
+<br>
+<div class="paddingtable" align="left" id="app"></div>
+<br>
+<br>
+<div class="paddingtable" id="notesdisplay"></div>
+</body>
+</html>
